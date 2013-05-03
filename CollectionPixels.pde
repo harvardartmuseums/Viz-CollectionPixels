@@ -27,6 +27,13 @@ boolean showHasCommentary = false;
 
 int showClassificationID = 17;
 
+boolean showInfoPanel = true;
+
+int activatedArtworkCount = 0;
+String infoPanelMessage = "";
+
+PFont fontA;
+
 HashMap classifications;
 
 void setup() {
@@ -49,43 +56,62 @@ void setup() {
       posy +=artworkHeight + spaceBetweenArtworks;
     }
   }
+  
+  //Prepare the remaining odds and ends
+  fontA = loadFont("CourierNew36.vlw");
+  textFont(fontA, 15);  
 }
 
 void draw() {
+  activatedArtworkCount = 0;
+  
   background(255);
   for (int i=0; i<artworks.length; i++) {
     fill(255);
     if (showOnView) {
       if (onView[i] == 1) {
         fill(fillColorR, fillColorG, fillColorB); 
+        activatedArtworkCount +=1;
       }
     }
     if (showInGrid) {
       if (inGrid[i] == 1) {
         fill(fillColorR, fillColorG, fillColorB);
+        activatedArtworkCount +=1;        
       }
     }
     if (showImageCount) {
       if (imageCount[i] > 0) {
         fill(fillColorR, fillColorG, fillColorB);
+        activatedArtworkCount +=1;        
       }
     }
     if (showHasDescription) {
       if (hasDescription[i] == 1) {
         fill(fillColorR, fillColorG, fillColorB);
+        activatedArtworkCount +=1;
       }
     }
     if (showClassification) {
       if (classification[i] == showClassificationID) {
         fill(fillColorR, fillColorG, fillColorB);
+        activatedArtworkCount +=1;
       }
     }
     if (showCentury) {
       if (century[i] == 111) {
         fill(fillColorR, fillColorG, fillColorB);
+        activatedArtworkCount +=1;
       }
     }
     noStroke();
     rect(ax[i], ay[i], artworkWidth, artworkHeight);
   }
+  
+  if (showInfoPanel) {
+    noStroke();
+    rect(0, height-60, width, 60);
+    fill(0,80);
+    text(activatedArtworkCount + " of " + artworks.length + " " + infoPanelMessage, 8, height-6);  
+  }  
 }
