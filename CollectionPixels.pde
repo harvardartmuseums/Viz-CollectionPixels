@@ -6,7 +6,6 @@ int fillColorR = 100;
 int fillColorG = 100;
 int fillColorB = 100;
 
-int numberOfArtworks = 220000;
 int[] artworks; 
 int[] classification;
 int[] century;
@@ -40,7 +39,7 @@ void setup() {
   int posx = 0;
   int posy = 0;
   
-  for(int i=0; i<numberOfArtworks; i++) {
+  for(int i=0; i<artworks.length; i++) {
     ax[i] = posx;
     ay[i] = posy;
     
@@ -54,7 +53,7 @@ void setup() {
 
 void draw() {
   background(255);
-  for (int i=0; i<numberOfArtworks; i++) {
+  for (int i=0; i<artworks.length; i++) {
     fill(255);
     if (showOnView) {
       if (onView[i] == 1) {
