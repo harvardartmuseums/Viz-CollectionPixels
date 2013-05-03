@@ -1,6 +1,10 @@
 
 
 void keyPressed() {
+  if (keyCode == KeyEvent.VK_ENTER) {
+    saveFrame("snapshots/snapshot-####.png");
+  }
+  
   if (keyCode == KeyEvent.VK_O) {
     showOnView = !showOnView;
   } else if (keyCode == KeyEvent.VK_C) {
