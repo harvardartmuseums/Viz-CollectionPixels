@@ -5,4 +5,4 @@ Just another way to view specific attributes of a large collection.
 Requirements
 ------------
 
-Processing 1.5.1<br />
+Processing 2.1+<br />

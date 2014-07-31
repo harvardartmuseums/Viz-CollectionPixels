@@ -1,3 +1,5 @@
+import java.awt.event.KeyEvent;
+
 final static int artworkWidth = 3;
 final static int artworkHeight = 3;
 final static int spaceBetweenArtworks = 0;
@@ -7,10 +9,10 @@ int fillColorG = 100;
 int fillColorB = 100;
 
 int[] artworks; 
-int[] classification;
+String[] classification;
+String[] division;
 int[] century;
 int[] onView;
-int[] inGrid;
 int[] imageCount;
 int[] hasDescription;
 int[] hasCommentary;
@@ -18,14 +20,13 @@ int[] ax;
 int[] ay; 
 
 boolean showOnView = false;
-boolean showInGrid = false;
 boolean showClassification = false;
 boolean showCentury = false;
 boolean showImageCount = false;
 boolean showHasDescription = false;
 boolean showHasCommentary = false;
 
-int showClassificationID = 17;
+String selectedClassification = "Paintings";
 
 boolean showInfoPanel = true;
 
@@ -37,7 +38,7 @@ PFont fontA;
 HashMap classifications;
 
 void setup() {
-  size(screen.width, screen.height);
+  size(displayWidth, displayHeight);
   //noLoop();
   
   loadData();
@@ -74,12 +75,6 @@ void draw() {
         activatedArtworkCount +=1;
       }
     }
-    if (showInGrid) {
-      if (inGrid[i] == 1) {
-        fill(fillColorR, fillColorG, fillColorB);
-        activatedArtworkCount +=1;        
-      }
-    }
     if (showImageCount) {
       if (imageCount[i] > 0) {
         fill(fillColorR, fillColorG, fillColorB);
@@ -93,7 +88,7 @@ void draw() {
       }
     }
     if (showClassification) {
-      if (classification[i] == showClassificationID) {
+      if (selectedClassification.equals(classification[i])) {
         fill(fillColorR, fillColorG, fillColorB);
         activatedArtworkCount +=1;
       }

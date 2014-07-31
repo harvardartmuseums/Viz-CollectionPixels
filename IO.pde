@@ -17,9 +17,8 @@ void keyPressed() {
     infoPanelMessage = showClassification ? infoPanelMessage : "";
   } else if (keyCode == KeyEvent.VK_V) {
     showCentury = !showCentury;
-  } else if (keyCode == KeyEvent.VK_G) {
-    showInGrid = !showInGrid;
-    infoPanelMessage = showInGrid ? "objects are featured online" : "";
+  } else if (keyCode == KeyEvent.VK_G) {    
+//    infoPanelMessage = showInGrid ? "objects are featured online" : "";
   } else if (keyCode == KeyEvent.VK_I) {
     showImageCount = !showImageCount;
     infoPanelMessage = showImageCount ? "objects have one or more images" : "";
@@ -28,21 +27,23 @@ void keyPressed() {
     infoPanelMessage = showHasDescription ? "objects have a description" : "";
     
   } else if (keyCode == KeyEvent.VK_1) {
-    showClassificationID = 17;
+    selectedClassification = "Photographs";
     infoPanelMessage = showClassification ? "objects are classified as photographs" : "";
   } else if (keyCode == KeyEvent.VK_2) {
-    showClassificationID = 23;
+    selectedClassification = "Prints";
     infoPanelMessage = showClassification ? "objects are classified as prints" : "";
   } else if (keyCode == KeyEvent.VK_3) {
-    showClassificationID = 50;
+    selectedClassification = "Coins";
     infoPanelMessage = showClassification ? "objects are classified as coins" : "";
   } else if (keyCode == KeyEvent.VK_4) {
-    showClassificationID = 26;
+    selectedClassification = "Paintings";
     infoPanelMessage = showClassification ? "objects are classified as paintings" : "";
   } else if (keyCode == KeyEvent.VK_5) {
-    showClassificationID = 75;
+    selectedClassification = "Calligraphy";
     infoPanelMessage = showClassification ? "objects are classified as calligraphy" : "";
   }
+  
+  println(selectedClassification);
 }
 
 
