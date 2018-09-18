@@ -1,66 +1,120 @@
-final static int OBJECT_ID = 0;
-final static int OBJECT_ORDER = 1;
-final static int DATE_BEGIN = 2;
-final static int DATE_END = 3;
-final static int CLASSIFICATION = 4;
-final static int CENTURY_ID = 5;
-final static int PERIOD_ID = 6;
-final static int CULTURE_ID = 7;
-final static int IMAGE_PERMISSION_LEVEL = 8;
-final static int VERIFICATION_LEVEL = 9;
-final static int IMAGE_COUNT = 10;
-final static int DIVISION = 11;
-final static int IS_ON_VIEW = 12;
-final static int HAS_DESCRIPTION = 13;
-final static int HAS_COMMENTARY = 14;
+String apiKey = "";
+String fields = "fields=objectid,totalpageviews,colors,classification,century,datebegin,dateend,accessionyear,culture,title,verificationlevel,gallery,images,rank,places,people,dateoflastpageview,dateoffirstpageview,primaryimageurl";
+String size = "size=100";
 
-void loadData() {
-  String bits[];
-  String lines[] = loadStrings("data.csv");
-  println("Loaded " + lines.length + " bits of data");
-  
-  artworks = new int[lines.length];
-  onView = new int[lines.length];
-  imageCount = new int[lines.length];
-  hasDescription = new int[lines.length];
-  hasCommentary = new int[lines.length];
-  classification = new String[lines.length];
-  century =  new int[lines.length];
-  ax = new int[lines.length];
-  ay = new int[lines.length];  
-  
-  for(int i=0; i<lines.length; i++) {
-    bits = split(lines[i], ",");
+ArrayList <Artwork> loadArtData(){
+  ArrayList <Artwork> aos = new ArrayList <Artwork>(); 
+
+  println("Started loading art data...");
+
+  File file = new File(dataPath("") + "/json");
+  File[] files = file.listFiles();
+  if (files != null && files.length > 0) {
+    println("Loading from " + files.length + " JSON files..."); 
     
-    //Store the ObjectID
-    artworks[i] = int(bits[OBJECT_ID]);
+    for (int i = 0; i < files.length; i++) { 
+      JSONArray records = loadJSONArray(files[i]);
+      for(int j=0;j<records.size();j++) {
+        JSONObject record = records.getJSONObject(j);
+        Artwork a = new Artwork(record);
+        aos.add(a);
+      } 
+    }
     
-    //Store the on view status (yes/no)
-    onView[i] = int(bits[IS_ON_VIEW]);
+  } else {  
+    int currentPage = 1;
+    String apiURL;
+    apiURL = "http://api.harvardartmuseums.org/object?apikey=" + 
+                      apiKey + "&" +
+                      "q=accesslevel:1&" +
+                      fields + "&" + 
+                      size;
     
-    imageCount[i] = int(bits[IMAGE_COUNT]);
-    hasCommentary[i] = int(bits[HAS_COMMENTARY]);
-    hasDescription[i] = int(bits[HAS_DESCRIPTION]);    
-    classification[i] = bits[CLASSIFICATION];
-    century[i] = int(bits[CENTURY_ID]);
-   
+    // Get the initial set of data
+    JSONObject data = loadJSONObject(apiURL);
+    JSONArray records = data.getJSONArray("records");
+      
+    println("Found " + data.getJSONObject("info").getInt("totalrecords") + " records");
+    
+    while (records.size() > 0) {
+      println("Processing page " + currentPage);
+      
+      saveJSONArray(records, "data/json/records-" + currentPage + ".json");
+      
+      for(int i=0;i<records.size();i++) {
+        JSONObject record = records.getJSONObject(i);
+        Artwork a = new Artwork(record);
+        aos.add(a);
+      }    
+      
+      // Get the next page of data
+      currentPage += 1;    
+      data = new JSONObject();
+      records = new JSONArray();
+      data = loadJSONObject(apiURL + "&page=" + currentPage);
+      records = data.getJSONArray("records");
+    }
   }
   
-  println("Done stepping through the data");
+  println("Finished loading art data...");
+  
+  return aos;
 }
 
-void loadLists() {
-  classifications = new HashMap();
-  
-  String bits[];
-  String lines[] = loadStrings("classifications.csv");
-  println("Loaded " + lines.length + " bits of data");
-  
-  for(int i=0; i<lines.length; i++) {
-    bits = split(lines[i], ",");
+
+HashMap <String, Integer> loadList(String listName) {
+  HashMap <String, Integer> hm = new HashMap();
+
+  int currentPage = 1;
+  String apiURL;
+  apiURL = "http://api.harvardartmuseums.org/" + listName + "?apikey=" + 
+                      apiKey + "&" +
+                      size;
     
-    classifications.put(bits[1], bits[0]);
+  // Get the initial set of data
+  JSONObject data = loadJSONObject(apiURL);
+  JSONArray records = data.getJSONArray("records");
+  Integer totalRecords = data.getJSONObject("info").getInt("totalrecords");
+  
+  println("Found " + totalRecords + " records");
+
+  while (records.size() > 0) {
+    println("Processing page " + currentPage);  
+    for(int i=0;i<records.size();i++) {
+      JSONObject record = records.getJSONObject(i);
+      
+      String name = record.getString("name");      
+//      color c = color((int) map(name.length(), 0.0, totalRecords, 0.0, 255.0), 
+//                      (int) map(name.length(), 0.0, totalRecords, 0.0, 255.0), 
+//                      (int) map(name.length(), 0.0, totalRecords, 0.0, 255.0));
+      color c = color((int) random(0, 255), 
+                      (int) random(0, 255),  
+                      (int) random(0, 255));
+                      
+      hm.put(name, c);
+    }
+      
+    // Get the next page of data
+    currentPage += 1;    
+    data = new JSONObject();
+    records = new JSONArray();
+    data = loadJSONObject(apiURL + "&page=" + currentPage);
+    records = data.getJSONArray("records");
   }
   
   println("Done stepping through the lists");
+  return hm;
+}
+
+HashMap <Integer, Integer> loadVerificationLevels() {
+ HashMap <Integer, Integer> hm = new HashMap();
+ 
+ for (int i=-1;i<5;i++) {
+   color c = color((int) random(0, 255), 
+                  (int) random(0, 255),  
+                  (int) random(0, 255));
+   hm.put(i, c);
+ } 
+ 
+ return hm;
 }

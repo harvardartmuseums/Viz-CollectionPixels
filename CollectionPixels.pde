@@ -1,112 +1,83 @@
 import java.awt.event.KeyEvent;
+import java.util.*;
 
-final static int artworkWidth = 3;
-final static int artworkHeight = 3;
-final static int spaceBetweenArtworks = 0;
+int artworkWidth = 3;
+int artworkHeight = 3;
+int spaceBetweenArtworks = 0;
 
-int fillColorR = 100;
-int fillColorG = 100;
-int fillColorB = 100;
+color defaultColor = color(100);
 
-int[] artworks; 
-String[] classification;
-String[] division;
-int[] century;
-int[] onView;
-int[] imageCount;
-int[] hasDescription;
-int[] hasCommentary;
-int[] ax; 
-int[] ay; 
+ArrayList <Artwork> artworks;
+HashMap <String, Integer> classifications;
+HashMap <Integer, Integer> verificationLevels;
+HashMap <String, Integer> cultures;
 
+boolean showChrome = false;
 boolean showOnView = false;
 boolean showClassification = false;
-boolean showCentury = false;
-boolean showImageCount = false;
-boolean showHasDescription = false;
-boolean showHasCommentary = false;
+boolean showVerificationLevel = false;
+boolean showPrimaryColor = false;
+boolean showInfoPanel = false;
+boolean showArtworkInfoPanel = true;
 
-String selectedClassification = "Paintings";
+Artwork selectedArtwork;
 
-boolean showInfoPanel = true;
-
-int activatedArtworkCount = 0;
-String infoPanelMessage = "";
-
-PFont fontA;
-
-HashMap classifications;
+PFont font;
 
 void setup() {
-  size(displayWidth, displayHeight);
-  //noLoop();
+  fullScreen(P3D, SPAN);
   
-  loadData();
-  loadLists();
-     
+  //Load the data
+  verificationLevels = loadVerificationLevels();
+  classifications = loadList("classification");
+  cultures = loadList("culture");
+  artworks = loadArtData();  
+
+  //Set the initial layout
+  arrangeArtworks();
+
+  //Prepare the remaining odds and ends
+  font = createFont("Arial", 18);
+  textFont(font);
+}
+
+void draw() {
+  background(255);
+
+  for (Artwork a : artworks) {
+    a.display();
+    if (a.isOver()) {
+      selectedArtwork = a;
+    }
+  }
+
+  if (showInfoPanel) {
+    noStroke();
+    fill(255, 80);
+    rect(0, height-60, width, 60);
+    fill(0);
+    text(artworks.size() + " artworks", 18, height-30);
+  }
+  
+  if (showArtworkInfoPanel) {
+    if (selectedArtwork != null) {
+      selectedArtwork.displayHighlight();
+      selectedArtwork.displayLabel();
+    }
+  }
+}
+
+void arrangeArtworks() {
   int posx = 0;
   int posy = 0;
-  
-  for(int i=0; i<artworks.length; i++) {
-    ax[i] = posx;
-    ay[i] = posy;
-    
+
+  for (Artwork a : artworks) {
+    a.setLocation(new PVector(posx, posy));
+
     posx +=artworkWidth + spaceBetweenArtworks;
     if (posx >= width) {
       posx = 0;
       posy +=artworkHeight + spaceBetweenArtworks;
     }
   }
-  
-  //Prepare the remaining odds and ends
-  fontA = loadFont("CourierNew36.vlw");
-  textFont(fontA, 15);  
-}
-
-void draw() {
-  activatedArtworkCount = 0;
-  
-  background(255);
-  for (int i=0; i<artworks.length; i++) {
-    fill(255);
-    if (showOnView) {
-      if (onView[i] == 1) {
-        fill(fillColorR, fillColorG, fillColorB); 
-        activatedArtworkCount +=1;
-      }
-    }
-    if (showImageCount) {
-      if (imageCount[i] > 0) {
-        fill(fillColorR, fillColorG, fillColorB);
-        activatedArtworkCount +=1;        
-      }
-    }
-    if (showHasDescription) {
-      if (hasDescription[i] == 1) {
-        fill(fillColorR, fillColorG, fillColorB);
-        activatedArtworkCount +=1;
-      }
-    }
-    if (showClassification) {
-      if (selectedClassification.equals(classification[i])) {
-        fill(fillColorR, fillColorG, fillColorB);
-        activatedArtworkCount +=1;
-      }
-    }
-    if (showCentury) {
-      if (century[i] == 111) {
-        fill(fillColorR, fillColorG, fillColorB);
-        activatedArtworkCount +=1;
-      }
-    }
-    noStroke();
-    rect(ax[i], ay[i], artworkWidth, artworkHeight);
-  }
-  
-  if (showInfoPanel) {
-    noStroke();
-    rect(0, height-60, width, 60);
-    fill(0,80);
-    text(activatedArtworkCount + " of " + artworks.length + " " + infoPanelMessage, 8, height-6);  
-  }  
 }
